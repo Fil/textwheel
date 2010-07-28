@@ -208,8 +208,8 @@ class TextWheel {
 	public function text($t) {
 		$rules = & $this->ruleset->getRules();
 		## apply each in order
-		foreach ($rules as $i=>$rule) #php4+php5
-			$this->apply($rules[$i], $t);
+		foreach ($rules as $rule) #php4+php5
+			$this->apply($rule, $t);
 		#foreach ($this->rules as &$rule) #smarter &reference, but php5 only
 		#	$this->apply($rule, $t);
 		return $t;
