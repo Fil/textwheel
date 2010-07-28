@@ -22,7 +22,8 @@ spip-listes:
   type: all
   priority: -20 # avant !spip-paragraphes
 
--
+spip-echappe-tags:
+  # voir spip-restaure-tags plus bas
   match: ",</?[a-z!][^<>]*[{}_-][^<>]*>,imsS"
   if_chars: "<"
   priority: -20 # avant !spip-paragraphes
@@ -81,7 +82,6 @@ quote-intro:
   if_str: "\n<br"
   priority: -20 # avant !spip-paragraphes
 
-
 spip-poesie:
   # poesie|poetry
   # utilise une callback
@@ -91,7 +91,8 @@ spip-poesie:
   is_callback: Y
   if_str: '<poe'
 
--
+spip-restaure-tags:
+  # voir spip-echappe-tags ci-dessus
   match: ["\x1", "\x2", "\x3", "\x4"]
   replace: ['{', '}', '_', '-']
   type: str
