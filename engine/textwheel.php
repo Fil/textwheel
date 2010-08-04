@@ -112,13 +112,26 @@ class TextWheelRuleSet {
 
 	/**
 	 * add an list of rules
-	 * can be an array or a string filename
+	 * can be
+	 * - an array of rules
+	 * - a string filename
+	 * - an array of string filename
 	 *
 	 * @param array/string $rules
 	 */
 	public function addRules($rules) {
+		// rules can be an array of filename
+		if (is_array($rules) AND is_string(reset($rules))) {
+			foreach($rules as $i=>$filename)
+				$this->addRules($filename);
+			return;
+		}
+
+		// rules can be a string : yaml filename
 		if (is_string($rules))
 			$rules = $this->loadRules($rules);
+
+		// rules can be an array of rules
 		if (is_array($rules) AND count($rules)){
 			# cast array-rules to objects
 			foreach ($rules as $i => $rule)
@@ -144,8 +157,21 @@ class TextWheelRuleSet {
 				)
 			)
 			return array();
-		require_once dirname(__FILE__).'/../lib/yaml/sfYaml.php';
-		$rules = sfYaml::load($file);
+
+		$rules = false;
+		// yaml caching
+		if (defined('_TW_DIR_CACHE_YAML')
+			AND $hash = substr(md5($file),0,8)."-".substr(md5_file($file),0,8)
+			AND $fcache = _TW_DIR_CACHE_YAML."yaml-".basename($file,'.yaml')."-".$hash.".txt"
+			AND file_exists($fcache)
+			AND $c = file_get_contents($fcache)
+			)
+			$rules = unserialize($c);
+
+		if (!$rules){
+			require_once dirname(__FILE__).'/../lib/yaml/sfYaml.php';
+			$rules = sfYaml::load($file);
+		}
 
 		if (!$rules)
 			return array();
@@ -156,6 +182,9 @@ class TextWheelRuleSet {
 		  AND file_exists($f))
 			include_once $f;
 
+		if ($fcache AND !$c)
+		 file_put_contents ($fcache, serialize($rules));
+		
 		return $rules;
 	}
 
